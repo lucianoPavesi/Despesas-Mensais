@@ -1,92 +1,110 @@
-# Guia de Deploy no Vercel
+# Guia Completo de Deploy no Vercel
 
-## Correções Realizadas para Build
+## ✅ Correções Implementadas
 
-O erro "npm run build retornou código de saída 1" foi corrigido com as seguintes alterações:
+### Arquivos de Configuração Criados/Atualizados:
 
-### 1. Arquivos Criados
+1. **`/vercel.json`** - Configuração completa do Vercel
+   - Framework: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Rewrites para SPA routing
 
-- **`/index.html`** - Arquivo HTML principal necessário para o Vite
-- **`/src/main.tsx`** - Entry point da aplicação React
-- **`/tsconfig.json`** - Configuração do TypeScript
-- **`/tsconfig.node.json`** - Configuração do TypeScript para Node
-- **`/src/vite-env.d.ts`** - Definições de tipos do Vite
-- **`/.gitignore`** - Ignorar arquivos desnecessários no Git
+2. **`/.npmrc`** - Configuração do npm
+   - `shamefully-hoist=true` - Compatibilidade com dependências
+   - `strict-peer-dependencies=false` - Evita erros de peer dependencies
 
-### 2. Arquivos Modificados
+3. **`/.gitignore`** - Ignora arquivos desnecessários
 
-#### `/package.json`
-- ✅ Adicionado `react` e `react-dom` às `dependencies`
-- ✅ Adicionado TypeScript e tipos às `devDependencies`
-- ✅ Removido `peerDependencies` (React agora é dependência direta)
-- ✅ Adicionado scripts: `dev`, `preview` e `typecheck`
+4. **`/vite.config.ts`** - Atualizado com build configuration
+   - Output directory: `dist`
+   - Rollup options otimizadas
 
-#### `/src/app/pages/Dashboard.tsx`
-- ✅ Removido import não utilizado do `FloatingActionButton`
+5. **`/tsconfig.node.json`** - Atualizado
+   - Incluído `types: ["node"]`
+   - Incluído `postcss.config.mjs`
 
-## Como Fazer Deploy no Vercel
+### Correções nas Pages:
 
-### Opção 1: Deploy via Git (Recomendado)
+Todas as páginas agora usam `export default` ao invés de `export function`:
+- ✅ `/src/app/pages/Dashboard.tsx`
+- ✅ `/src/app/pages/NewTransaction.tsx`
+- ✅ `/src/app/pages/EditTransaction.tsx`
+- ✅ `/src/app/pages/Stats.tsx`
+- ✅ `/src/app/pages/Calendar.tsx`
+- ✅ `/src/app/pages/Categories.tsx`
 
-1. **Inicialize o repositório Git:**
+### Outros Ajustes:
+
+- ✅ Adicionado `Toaster` do Sonner no App.tsx
+- ✅ Imports corrigidos em `/src/app/routes.ts`
+
+## 📋 Estrutura do Projeto
+
+```
+/
+├── index.html              # HTML principal (raiz)
+├── package.json            # Dependências
+├── vercel.json             # Config Vercel
+├── vite.config.ts          # Config Vite
+├── tsconfig.json           # Config TypeScript
+├── tsconfig.node.json      # Config TypeScript Node
+├── .npmrc                  # Config npm
+├── .gitignore              # Arquivos ignorados
+├── postcss.config.mjs      # Config PostCSS
+└── src/
+    ├── main.tsx            # Entry point
+    ├── vite-env.d.ts       # Tipos Vite
+    ├── app/
+    │   ├── App.tsx         # Componente principal
+    │   ├── routes.ts       # Rotas React Router
+    │   ├── pages/          # Páginas (6 arquivos)
+    │   ├── components/     # Componentes reutilizáveis
+    │   ├── context/        # Context APIs
+    │   └── data/           # Mock data
+    └── styles/             # CSS files
+```
+
+## 🚀 Deploy no Vercel
+
+### Opção 1: Via Git (Recomendado)
+
+1. **Commit as mudanças:**
    ```bash
-   git init
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Fix: Configurações completas para deploy no Vercel"
+   git push
    ```
 
-2. **Crie um repositório no GitHub:**
-   - Acesse https://github.com/new
-   - Crie um novo repositório (público ou privado)
+2. **No Vercel Dashboard:**
+   - Vá para https://vercel.com/dashboard
+   - Selecione seu projeto
+   - O Vercel detectará automaticamente as configurações
+   - Aguarde o deploy automático
 
-3. **Conecte e envie o código:**
-   ```bash
-   git remote add origin https://github.com/seu-usuario/seu-repositorio.git
-   git branch -M main
-   git push -u origin main
-   ```
+### Opção 2: Via Vercel CLI
 
-4. **Importe no Vercel:**
-   - Acesse https://vercel.com
-   - Clique em "Add New Project"
-   - Importe o repositório do GitHub
-   - Configure o projeto (Vercel detectará automaticamente o Vite)
-   - Clique em "Deploy"
+```bash
+# Instalar Vercel CLI
+npm install -g vercel
 
-### Opção 2: Deploy via CLI do Vercel
+# Login
+vercel login
 
-1. **Instale o Vercel CLI:**
-   ```bash
-   npm install -g vercel
-   ```
+# Deploy
+vercel --prod
+```
 
-2. **Faça login:**
-   ```bash
-   vercel login
-   ```
-
-3. **Deploy:**
-   ```bash
-   vercel --prod
-   ```
-
-## Configurações do Vercel (Automáticas)
+## 🔍 Configurações Automáticas do Vercel
 
 O Vercel detectará automaticamente:
-- Framework: Vite
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Install Command: `npm install`
+- **Framework Preset**: Vite
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
+- **Node Version**: 18.x
 
-## Variáveis de Ambiente (se necessário)
-
-Caso precise adicionar variáveis de ambiente:
-1. No dashboard do Vercel, vá em "Settings" > "Environment Variables"
-2. Adicione as variáveis necessárias
-
-## Verificação do Build Local
-
-Antes de fazer deploy, você pode testar localmente:
+## ✨ Teste Local Antes do Deploy
 
 ```bash
 # Instalar dependências
@@ -95,49 +113,88 @@ npm install
 # Build de produção
 npm run build
 
-# Preview do build
+# Preview do build (porta 4173)
 npm run preview
 ```
 
-## Estrutura de Arquivos Importante
+Se o comando `npm run build` funcionar localmente sem erros, o deploy no Vercel também funcionará.
 
-```
-/
-├── index.html          # HTML principal (raiz do projeto)
-├── package.json        # Dependências e scripts
-├── tsconfig.json       # Config TypeScript
-├── vite.config.ts      # Config Vite
-├── vercel.json         # Config Vercel (SPA routing)
-└── src/
-    ├── main.tsx        # Entry point
-    ├── vite-env.d.ts   # Tipos Vite
-    ├── app/
-    │   ├── App.tsx     # Componente principal
-    │   ├── routes.ts   # Rotas
-    │   ├── pages/      # Páginas
-    │   ├── components/ # Componentes
-    │   └── context/    # Contextos
-    └── styles/         # Estilos
-```
+## 🐛 Troubleshooting
 
-## Troubleshooting
+### Se o erro persistir no Vercel:
 
-### Se o build ainda falhar:
+1. **Limpe o cache do Vercel:**
+   - Dashboard do Vercel > Settings > General
+   - Clique em "Clear Build Cache & Deploy"
 
-1. **Verifique os logs do Vercel** - Eles mostrarão o erro específico
-2. **Teste o build localmente** - Execute `npm run build` para ver erros
-3. **Verifique as dependências** - Execute `npm install` novamente
-4. **Limpe o cache** - No Vercel, nas configurações do projeto
+2. **Verifique os logs de build:**
+   - Clique na implantação que falhou
+   - Veja os logs detalhados na aba "Logs"
+   - Procure por erros específicos
 
-### Erros Comuns:
+3. **Force redeploy:**
+   - Vá em Deployments
+   - Encontre a última implantação
+   - Clique nos 3 pontinhos > "Redeploy"
+   - Marque "Use existing Build Cache" como OFF
 
-- **"Cannot find module 'react'"** → React não está instalado (já corrigido)
-- **"index.html not found"** → index.html não está na raiz (já corrigido)
-- **"Cannot find entry point"** → main.tsx não existe (já corrigido)
-- **TypeScript errors** → Execute `npm run typecheck` para verificar
+4. **Verifique as configurações do projeto:**
+   - Settings > General
+   - Framework Preset: Vite
+   - Root Directory: ./
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
 
-## Suporte
+### Erros Comuns Resolvidos:
 
-Caso encontre problemas durante o deploy, verifique:
-- Documentação do Vercel: https://vercel.com/docs
-- Documentação do Vite: https://vitejs.dev/guide/
+✅ **"Falha ao resolver /src/main.tsx"**
+- RESOLVIDO: Todas as páginas agora usam `export default`
+
+✅ **"npm run build retornou código 1"**
+- RESOLVIDO: Configurações do Vite, TypeScript e Vercel atualizadas
+
+✅ **Problemas com peer dependencies**
+- RESOLVIDO: `.npmrc` configurado
+
+✅ **Problemas com SPA routing**
+- RESOLVIDO: `vercel.json` com rewrites configurados
+
+## 📝 Checklist Final
+
+Antes de fazer deploy, verifique:
+
+- [x] `index.html` está na raiz do projeto
+- [x] `src/main.tsx` existe e importa corretamente o App
+- [x] Todas as páginas usam `export default`
+- [x] `vercel.json` está configurado
+- [x] `.npmrc` foi criado
+- [x] `vite.config.ts` tem a configuração de build
+- [x] `package.json` tem os scripts corretos
+- [x] `npm run build` funciona localmente
+
+## 🎯 Próximos Passos
+
+Após o deploy bem-sucedido:
+
+1. **Configure um domínio customizado** (opcional)
+   - Settings > Domains
+
+2. **Configure variáveis de ambiente** (se necessário)
+   - Settings > Environment Variables
+
+3. **Configure Analytics** (opcional)
+   - Analytics > Enable
+
+4. **Configure proteções** (opcional)
+   - Settings > Deployment Protection
+
+## 📚 Recursos Úteis
+
+- [Documentação Vercel - Vite](https://vercel.com/docs/frameworks/vite)
+- [Documentação Vite](https://vitejs.dev/guide/)
+- [React Router v7](https://reactrouter.com/en/main)
+- [Tailwind CSS v4](https://tailwindcss.com/docs)
+
+---
+
+**Última atualização:** Todas as configurações necessárias foram implementadas. O projeto está pronto para deploy! 🚀
